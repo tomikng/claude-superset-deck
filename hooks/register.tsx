@@ -360,7 +360,7 @@ export const register: Register = (on, options) => {
       void openPane($, true)
     }
     void refresh($, { force: true })
-    $.clock.every(8000, () => void refresh($))
+    $.clock.every(8000, () => void refresh($).catch(() => {}))
     $.clock.every(1500, () => {
       void (async () => {
         if (!(await paneShown($))) return
@@ -373,7 +373,7 @@ export const register: Register = (on, options) => {
           (s !== null && now - s.changedAt < SCREEN_ACTIVE_MS) ||
           ws.some(w => now - w.lastActivityAt < ACTIVE_MS)
         if (isBusy) await update($, frame, f => (f + 1) % 1000)
-      })()
+      })().catch(() => {})
     })
     return started
   })

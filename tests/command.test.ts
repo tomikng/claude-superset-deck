@@ -11,6 +11,7 @@ test('session.start registers /deck and /superset-deck', async ($, on) => {
   })
   on('clock.every', () => ({ value: undefined }))
   on('env.get', () => ({ value: undefined }))
+  on('ui.panes', () => ({ value: [] }))
   on('process.run', () => ({ value: { exitCode: 1, stdout: '', stderr: 'offline', isStdoutTruncated: false, isStderrTruncated: false } }))
   on('session.start', () => ({ cwd: '/tmp' }))
   await $.session.start({ cwd: '/tmp', surface: 'terminal', isInteractive: true })

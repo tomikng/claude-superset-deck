@@ -804,29 +804,34 @@ export const register: Register = (on, options) => {
     )
   })
 
+  // Other plugins share the band: whatever they drew goes below ours.
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    if (!showBand || e.props.hasSurvey) return next(e)
+    const below = await next(e)
+    if (!showBand || e.props.hasSurvey) return below
     const [list, terms] = [await read($, workspaces), await read($, terminals)]
-    if (list.length === 0) return next(e)
+    if (list.length === 0) return below
     const isOpen = await paneShown($)
-    if (isOpen) return next(e)
+    if (isOpen) return below
     const { Box, Text, Button } = $.ui.resolve(e)
     const now = Date.now()
     const live = Object.values(terms).reduce((n, l) => n + liveTerminals(l).length, 0)
     const hot = list.filter(w => now - w.lastActivityAt < ACTIVE_MS).length
     return (
-      <Box flexDirection="row" gap={1}>
-        <Text>
-          <Text color="magenta" bold>
-            {icons.logo} Superset
+      <Box flexDirection="column">
+        <Box flexDirection="row" gap={1}>
+          <Text>
+            <Text color="magenta" bold>
+              {icons.logo} Superset
+            </Text>
+            <Text dimColor> {list.length} workspaces · </Text>
+            <Text color={live ? 'green' : 'gray'}>
+              {icons.live} {live} live
+            </Text>
+            {hot > 0 && <Text color="yellow"> · {hot} active</Text>}
           </Text>
-          <Text dimColor> {list.length} workspaces · </Text>
-          <Text color={live ? 'green' : 'gray'}>
-            {icons.live} {live} live
-          </Text>
-          {hot > 0 && <Text color="yellow"> · {hot} active</Text>}
-        </Text>
-        <Button key="band:open" plain hotkey="s" label={`${icons.open} open`} onPress={() => openPane($, true)} />
+          <Button key="band:open" plain hotkey="o" label={`${icons.open} open`} onPress={() => openPane($, true)} />
+        </Box>
+        {below}
       </Box>
     )
   })

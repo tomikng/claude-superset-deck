@@ -31,7 +31,7 @@ Browse every workspace on the machine grouped by project, watch an agent's termi
 | **Message bar** | With a live agent: sends your text into its terminal (`superset terminals send`). Without one: starts a new agent on your prompt (`superset agents create`). |
 | **New workspace** | `n`, or `/deck new <branch> [prompt]`: pick a project, name the branch, optionally give a prompt, and `superset ws create` makes the worktree and starts the agent. |
 | **Open / delete** | `o` opens the workspace in the Superset desktop app; `x` then `y` deletes it. |
-| **Status band** | While the pane is closed, a one-line summary above the prompt (`s` opens the deck). |
+| **Status band** | While the pane is closed, a one-line summary above the prompt (`o` opens the deck). |
 
 ## Requirements
 

@@ -1,0 +1,13 @@
+{
+  "name": "superset-deck",
+  "owner": {
+    "name": "tomikng"
+  },
+  "plugins": [
+    {
+      "name": "superset-deck",
+      "source": "./",
+      "description": "A Superset-style workspace sidebar inside Claude Code, driven by the Superset CLI"
+    }
+  ]
+}

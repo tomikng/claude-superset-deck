@@ -1,0 +1,41 @@
+{
+  "name": "superset-deck",
+  "version": "0.1.0",
+  "description": "A Superset-style workspace sidebar inside Claude Code, driven by the Superset CLI",
+  "author": {
+    "name": "tomikng"
+  },
+  "repository": "https://github.com/tomikng/claude-superset-deck",
+  "license": "MIT",
+  "keywords": [
+    "superset",
+    "workspaces",
+    "agents",
+    "pane"
+  ],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "icons": {
+      "type": "string",
+      "title": "Icon set",
+      "description": "nerd needs a Nerd Font in the terminal; unicode works everywhere",
+      "options": [
+        "nerd",
+        "unicode"
+      ],
+      "default": "nerd"
+    },
+    "agent": {
+      "type": "string",
+      "title": "Agent preset",
+      "description": "Superset agent preset id (or HostAgentConfig UUID) used for new agents",
+      "default": "claude"
+    },
+    "band": {
+      "type": "boolean",
+      "title": "Status band",
+      "description": "Show a one-line Superset summary above the prompt",
+      "default": true
+    }
+  }
+}

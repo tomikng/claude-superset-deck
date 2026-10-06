@@ -7,6 +7,7 @@ import { iconsFor } from './icons'
 
 const PANE = 'superset-deck'
 const TITLE = 'Superset'
+const COMMANDS = ['deck', 'superset-deck']
 
 const workspaces = atom({ plugin: 'superset-deck', key: 'workspaces' } as const, [] as Workspace[])
 const terminals = atom({ plugin: 'superset-deck', key: 'terminals' } as const, {} as Record<string, Terminal[]>)
@@ -344,11 +345,14 @@ export const register: Register = (on, options) => {
 
   on('session.start', async ($, e, next) => {
     const started = await next(e)
-    await $.command.register({
-      name: 'superset',
-      description: 'Open the Superset workspace deck (max | side | new <branch> [prompt] | refresh | close)',
-      argumentHint: '[max | side | new <branch> [prompt] | refresh | close]',
-    })
+    // `/superset` itself belongs to the Superset plugin's skill namespace.
+    for (const name of COMMANDS) {
+      await $.command.register({
+        name,
+        description: 'Superset workspace deck (max | side | new <branch> [prompt] | refresh | close)',
+        argumentHint: '[max | side | new <branch> [prompt] | refresh | close]',
+      })
+    }
     if ((await $.env.get('SUPERSET_DECK_MAIN')) === '1') {
       // The width is known once the pane first draws; it widens itself then.
       isMax = true
@@ -374,7 +378,8 @@ export const register: Register = (on, options) => {
     return started
   })
 
-  on('command.run', { command: 'superset' }, async ($, e) => {
+  on('command.run', async ($, e, next) => {
+    if (!COMMANDS.includes(e.command)) return next(e)
     const [verb = '', ...rest] = e.args.trim().split(/\s+/).filter(Boolean)
     if (verb === 'close') {
       await $.ui.close({ id: PANE })

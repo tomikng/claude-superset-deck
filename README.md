@@ -29,7 +29,7 @@ Browse every workspace on the machine grouped by project, watch an agent's termi
 | **Diff tab** | The branch's diff against its fork point from the default branch, syntax-highlighted, paged with `u` / `d`. |
 | **Info tab** | Branch, project, worktree path, timestamps, terminals. |
 | **Message bar** | With a live agent: sends your text into its terminal (`superset terminals send`). Without one: starts a new agent on your prompt (`superset agents create`). |
-| **New workspace** | `n`, or `/superset new <branch> [prompt]`: pick a project, name the branch, optionally give a prompt, and `superset ws create` makes the worktree and starts the agent. |
+| **New workspace** | `n`, or `/deck new <branch> [prompt]`: pick a project, name the branch, optionally give a prompt, and `superset ws create` makes the worktree and starts the agent. |
 | **Open / delete** | `o` opens the workspace in the Superset desktop app; `x` then `y` deletes it. |
 | **Status band** | While the pane is closed, a one-line summary above the prompt (`s` opens the deck). |
 
@@ -37,7 +37,7 @@ Browse every workspace on the machine grouped by project, watch an agent's termi
 
 - Claude Code with function-hook plugins (2.1.289 or newer).
 - The `superset` CLI on `PATH`, logged in, with a running host on this machine (`superset status`).
-- The **fullscreen terminal layout** to dock the pane as a sidebar (it seats from 144 columns when opened on its own; `/superset` opens it at any width).
+- The **fullscreen terminal layout** to dock the pane as a sidebar (it seats from 144 columns when opened on its own; `/deck` opens it at any width).
 - A [Nerd Font](https://www.nerdfonts.com) for the icons, or set the icon option to `unicode`.
 
 ## Install
@@ -59,7 +59,7 @@ claude --plugin-dir ./claude-superset-deck
 Inside Claude Code a pane always sits beside the conversation, so the deck has two sizes:
 
 - **Sidebar** (default): the dock's usual share of the width.
-- **Maximized**: `z` in the pane, or `/superset max`, asks the dock for every column but a narrow strip of transcript. `/superset side` (or `z` again) puts it back. A width you dragged yourself wins over both.
+- **Maximized**: `z` in the pane, or `/deck max`, asks the dock for every column but a narrow strip of transcript. `/deck side` (or `z` again) puts it back. A width you dragged yourself wins over both.
 
 For a dedicated Superset window, start Claude Code through the launcher. The deck opens maximized and focused, and the prompt underneath talks to a Claude that can drive the `superset` CLI for you:
 
@@ -73,10 +73,10 @@ Bind that to a key in your window manager to get a Superset window on demand. `S
 
 | Keys / command | |
 | --- | --- |
-| `/superset` | Open the deck (focused) |
-| `/superset new <branch> [prompt]` | Open the new-workspace form pre-filled |
-| `/superset max` · `/superset side` | Maximize the deck · back to a sidebar |
-| `/superset refresh` · `/superset close` | Refresh everything now · close the pane |
+| `/deck` (or `/superset-deck`) | Open the deck (focused) |
+| `/deck new <branch> [prompt]` | Open the new-workspace form pre-filled |
+| `/deck max` · `/deck side` | Maximize the deck · back to a sidebar |
+| `/deck refresh` · `/deck close` | Refresh everything now · close the pane |
 | `ctrl+x tab` or click | Move the keyboard into the pane |
 | `j` / `k` | Next / previous workspace |
 | `1` `2` `3` | Agent · Diff · Info |

@@ -118,7 +118,7 @@ let icons = iconsFor('nerd')
 let agentPreset = 'claude'
 let showBand = true
 
-let isRefreshing = false
+let inflight: Promise<void> | null = null
 let isReading = false
 let lastStatsAt = 0
 let lastProjectsAt = 0
@@ -132,10 +132,16 @@ async function flash($: EngineInterface, text: string, isError = false) {
   })
 }
 
-async function refresh($: EngineInterface, opts: { force?: boolean } = {}) {
-  if (isRefreshing) return
-  isRefreshing = true
-  try {
+// One refresh at a time; a caller arriving mid-refresh waits for that one.
+function refresh($: EngineInterface, opts: { force?: boolean } = {}): Promise<void> {
+  inflight ??= loadAll($, opts).finally(() => {
+    inflight = null
+  })
+  return inflight
+}
+
+async function loadAll($: EngineInterface, opts: { force?: boolean }) {
+  {
     const listed = await superset($, ['ws', 'list', '--local'])
     if (!listed.ok) {
       await update($, banner, prev => keep(prev, { text: `superset ws list: ${listed.error}`, isError: true }))
@@ -174,8 +180,6 @@ async function refresh($: EngineInterface, opts: { force?: boolean } = {}) {
     }
     await pickTerminal($)
     await update($, loadedAt, prev => keep(prev, now))
-  } finally {
-    isRefreshing = false
   }
 }
 

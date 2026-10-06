@@ -319,8 +319,21 @@ async function openInApp($: EngineInterface, id: string) {
   await flash($, r.ok ? 'Opened in Superset' : r.error, !r.ok)
 }
 
-function openPane($: EngineInterface, focus: boolean) {
-  return $.ui.open({ id: PANE, title: TITLE, ...(focus ? { focus: true as const } : {}) })
+// Main-window mode asks the dock for every column but a sliver of transcript;
+// side mode leaves the width to the engine's share (or what the person dragged).
+let isMax = false
+let needsWiden = false
+let screenColumns = 0
+const TRANSCRIPT_SLIVER = 24
+
+function openPane($: EngineInterface, focus: boolean, columns = screenColumns) {
+  const wide = isMax && columns > 0 ? { columns: Math.max(60, columns - TRANSCRIPT_SLIVER) } : {}
+  return $.ui.open({ id: PANE, title: TITLE, ...wide, ...(focus ? { focus: true as const } : {}) })
+}
+
+async function toggleMax($: EngineInterface) {
+  isMax = !isMax
+  await openPane($, true)
 }
 
 
@@ -333,9 +346,15 @@ export const register: Register = (on, options) => {
     const started = await next(e)
     await $.command.register({
       name: 'superset',
-      description: 'Open the Superset workspace deck (new <branch> [prompt] | refresh | close)',
-      argumentHint: '[new <branch> [prompt] | refresh | close]',
+      description: 'Open the Superset workspace deck (max | side | new <branch> [prompt] | refresh | close)',
+      argumentHint: '[max | side | new <branch> [prompt] | refresh | close]',
     })
+    if ((await $.env.get('SUPERSET_DECK_MAIN')) === '1') {
+      // The width is known once the pane first draws; it widens itself then.
+      isMax = true
+      needsWiden = true
+      void openPane($, true)
+    }
     void refresh($, { force: true })
     $.clock.every(8000, () => void refresh($))
     $.clock.every(1500, () => {
@@ -365,11 +384,18 @@ export const register: Register = (on, options) => {
       await refresh($, { force: true })
       return { text: `Refreshed: ${(await read($, workspaces)).length} workspaces.` }
     }
+    if (verb === 'max' || verb === 'side') {
+      isMax = verb === 'max'
+      screenColumns = e.presentation.columns || screenColumns
+      await openPane($, true)
+      return { text: isMax ? 'Superset deck maximized.' : 'Superset deck back to a sidebar.' }
+    }
     if (verb === 'new') {
       const [branch = '', ...prompt] = rest
       await update($, form, f => ({ ...f, branch, prompt: prompt.join(' ') }))
       await update($, mode, () => 'new' as Mode)
     }
+    screenColumns = e.presentation.columns || screenColumns
     await openPane($, true)
     return { text: verb === 'new' ? 'Pick a project to create the workspace in.' : 'Superset deck opened.' }
   })
@@ -378,6 +404,11 @@ export const register: Register = (on, options) => {
     if (e.surface === 'mobile') return next(e)
     const { Box, Text, Button, Input, Select, Code } = $.ui.resolve(e)
     const cols = e.props.bodyColumns
+    if (e.viewport?.columns) screenColumns = e.viewport.columns
+    if (needsWiden && screenColumns) {
+      needsWiden = false
+      void openPane($, false)
+    }
     const rows = Math.max(12, (e.viewport?.rows ?? 30) - 3)
     const now = Date.now()
 
@@ -439,6 +470,7 @@ export const register: Register = (on, options) => {
         <Box flexDirection="row" gap={1}>
           <Button key="new" plain hotkey="n" label={`${icons.plus} New`} onPress={() => update($, mode, () => 'new' as Mode)} />
           <Button key="refresh" plain hotkey="r" label={icons.refresh} onPress={() => refresh($, { force: true })} />
+          <Button key="max" plain hotkey="z" label={isMax ? icons.restore : icons.maximize} onPress={() => toggleMax($)} />
         </Box>
       </Box>
     )
@@ -743,7 +775,7 @@ export const register: Register = (on, options) => {
           </Text>
         ) : (
           <Text dimColor wrap="truncate">
-            ctrl+x tab focus · j/k move · 1/2/3 tabs · n new · o open · x delete · r refresh
+            ctrl+x tab focus · j/k move · 1/2/3 tabs · n new · o open · x delete · r refresh · z maximize
           </Text>
         )}
       </Box>

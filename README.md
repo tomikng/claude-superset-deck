@@ -54,17 +54,34 @@ git clone https://github.com/tomikng/claude-superset-deck
 claude --plugin-dir ./claude-superset-deck
 ```
 
+## Main window or sidebar
+
+Inside Claude Code a pane always sits beside the conversation, so the deck has two sizes:
+
+- **Sidebar** (default): the dock's usual share of the width.
+- **Maximized**: `z` in the pane, or `/superset max`, asks the dock for every column but a narrow strip of transcript. `/superset side` (or `z` again) puts it back. A width you dragged yourself wins over both.
+
+For a dedicated Superset window, start Claude Code through the launcher. The deck opens maximized and focused, and the prompt underneath talks to a Claude that can drive the `superset` CLI for you:
+
+```sh
+xdg-terminal-exec /path/to/claude-superset-deck/bin/superset-deck
+```
+
+Bind that to a key in your window manager to get a Superset window on demand. `SUPERSET_DECK_CWD` picks the directory the session starts in (default `$HOME`).
+
 ## Use
 
 | Keys / command | |
 | --- | --- |
 | `/superset` | Open the deck (focused) |
 | `/superset new <branch> [prompt]` | Open the new-workspace form pre-filled |
+| `/superset max` · `/superset side` | Maximize the deck · back to a sidebar |
 | `/superset refresh` · `/superset close` | Refresh everything now · close the pane |
 | `ctrl+x tab` or click | Move the keyboard into the pane |
 | `j` / `k` | Next / previous workspace |
 | `1` `2` `3` | Agent · Diff · Info |
 | `n` · `r` · `o` · `x` | New · refresh · open in Superset · delete |
+| `z` | Maximize / restore |
 | `u` / `d` | Page the diff |
 | `Esc` | Back to the prompt |
 

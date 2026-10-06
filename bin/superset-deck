@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Opens Claude Code with the Superset deck as the main window: the pane takes
+# the whole width but a sliver of transcript, and opens focused on start.
+# Run it in its own terminal window, e.g.  xdg-terminal-exec superset-deck
+set -euo pipefail
+here="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+plugin_args=()
+# Skip --plugin-dir when the plugin is already installed from the marketplace.
+if ! claude plugin list 2>/dev/null | grep -q 'superset-deck@'; then
+  plugin_args=(--plugin-dir "$here")
+fi
+cd "${SUPERSET_DECK_CWD:-$HOME}"
+SUPERSET_DECK_MAIN=1 exec claude "${plugin_args[@]}" "$@"

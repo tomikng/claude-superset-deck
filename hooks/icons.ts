@@ -21,6 +21,8 @@ export type IconSet = {
   up: string
   down: string
   host: string
+  maximize: string
+  restore: string
   spinner: readonly string[]
 }
 
@@ -50,6 +52,8 @@ const NERD: IconSet = {
   up: '\u{f077}',
   down: '\u{f078}',
   host: '\u{f108}',
+  maximize: '\u{f065}',
+  restore: '\u{f066}',
   spinner: SPINNER,
 }
 
@@ -76,6 +80,8 @@ const UNICODE: IconSet = {
   up: '↑',
   down: '↓',
   host: '⌂',
+  maximize: '⤢',
+  restore: '⤡',
   spinner: SPINNER,
 }
 
